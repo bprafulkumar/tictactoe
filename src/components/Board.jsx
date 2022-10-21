@@ -1,23 +1,27 @@
 import React from "react";
-import Square  from "./Square";
+import Square from "./Square";
 
-const Board = () => {
+
+const Board = ({board,handlesquareclick}) => {
+    const renderitem = (position) => {
+        return (<Square value = {board[position]} onClick= {()=>handlesquareclick(position)} />)
+    }
     return (
         <div className="board">
             <div className="board-row">
-                <Square value = {1} />
-                <Square value = {2} />
-                <Square value = {3}/>
+                {renderitem(0)}
+                {renderitem(1)}
+                {renderitem(2)}
             </div>
             <div className="board-row">
-                <Square value = {4} />
-                <Square value = {5}/>
-                <Square value = {1}/>
+                {renderitem(3)}
+                {renderitem(4)}
+                {renderitem(5)}
             </div>
              <div className="board-row">
-                <Square value = {6}/>
-                <Square value = {7}/>
-                <Square value = {8}/>
+                {renderitem(6)}
+                {renderitem(7)}
+                {renderitem(8)}
             </div>
         </div>
     )
