@@ -2,41 +2,67 @@ import React,{ useState } from "react";
 import "./root.scss"
 import Board from "./components/Board";
 import calculateWinner from "./winner"
+import History from "./components/History";
+import Statusmessage from "./components/Statusmessage";
 
 
 
 const App = () => {
-  const [board , setBoard] = useState(Array(9).fill(null))
-  const [Xnext , setXnext] =useState(false)
+
+  const NEW_GAME = [{board:Array(9).fill(null),Xnext:true}];
+  const [history , setHistory] = useState(NEW_GAME)
+  const [currentmove , setCurrentmove] = useState(0)
+
+  // console.log(history)
+
+  const current = history[currentmove]
+  // const [Xnext , setXnext] =useState(false)
   // console.log(Value)
   // console.log(board)
-  const winner = calculateWinner(board)
-
-  const message = winner ? `winner is ${winner}` : `Next player is ${Xnext ? "O" : "X"}`
+  const {winner , winningSquare} = calculateWinner(current.board)
   
 
   const handlesquareclick = (position) => {
-    if(board[position]){
+    if(current.board[position] || winner){
       return
     }      
-      setBoard(prev => {
-         return prev.map((val,pos) => {
+      setHistory(prev => {
+
+        const last = prev[prev.length-1]
+
+         const newBoard = last.board.map((val,pos) => {
            if(pos === position){
-              return Xnext ? "X" : "O";
+              return last.Xnext ? "X" : "O";
            }
            return val;
          })
+
+         return prev.concat({board:newBoard, Xnext:!last.Xnext})
       })
-      setXnext((prev) => !prev)
+      setCurrentmove((prev) => prev+1)
+  }
+  const moveTo = (move) => {
+    setCurrentmove(move)
+  }
+  const restart = () => {
+   setHistory(NEW_GAME)
+    setCurrentmove(0)
   }
 
   // const winner = calculateWinner()
   // console.log(winner)
   return (
     <div className="app">
-      <h1>Welcome to React Vite Micro App!</h1>
-      <h2>{`The leadershipboard: ${message}`}</h2>
-      <Board board={board} handlesquareclick={handlesquareclick} />
+      <h1>TIK <span className="text-green">TOK</span> TIK</h1>
+      {/* <h2>{`The leadershipboard: ${message}`}</h2> */}
+      <Statusmessage winner= {winner} current = {current} />
+      <Board board={current.board} handlesquareclick={handlesquareclick} winningSquare = {winningSquare} />
+
+      <button onClick={restart} className={`btn-reset ${winner ? 'active' : '' }`}>Start New Game</button>
+
+        <h1 style={{'fontWeight':"normal"}} >Current Game History</h1>
+      <History history = {history} moveTo ={moveTo} currentmove= {currentmove} />
+      <div className="bg-balls"/>
     </div>
   )
 }
